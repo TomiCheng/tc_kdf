@@ -1,0 +1,24 @@
+[package]
+name = "tc_kdf"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Key derivation functions after Bouncy Castle: KDF1, KDF2, the concatenation KDF, HKDF and the SP 800-108 KDFs."
+readme = "README.md"
+documentation = "https://docs.rs/tc_kdf"
+keywords = ["kdf", "hkdf", "key-derivation", "cryptography", "no-std"]
+categories = ["cryptography", "no-std"]
+include = ["src/**", "tests/**", "README.md", "CHANGELOG.md", "LICENSE-MIT", "LICENSE-APACHE"]
+
+[dependencies]
+tc_digest = "0.1.0"
+tc_macs = { version = "0.1.0", features = ["hmac", "alloc"] }
+tc_zeroize = { version = "0.1.0", features = ["alloc"] }
+
+[dev-dependencies]
+tc_aes = "0.1.0"
+tc_digest = { version = "0.1.1", features = ["alloc"] }
+tc_macs = { version = "0.1.0", features = ["hmac", "cmac", "alloc"] }
+tc_sha = "0.1.1"
