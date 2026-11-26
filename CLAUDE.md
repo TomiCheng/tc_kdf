@@ -25,11 +25,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 The crate list and workspace-wide checks live in the root
 [README.md](README.md); read it rather than restating it here. Every crate is
-`no_std`. `tc_kdf` always uses `alloc`, for the copies of the secret it keeps.
+`no_std`. `tc_kdf` and `tc_pbe` always use `alloc`, for the copies of the
+secret they keep.
 
-This repository holds key derivation after Bouncy Castle's
-`IDerivationFunction`: functions that turn a secret with enough entropy into
-key bytes. Password-based derivation, which must be slow, is not a KDF here.
+This repository holds key derivation after Bouncy Castle: `IDerivationFunction`
+for secrets with enough entropy, and `PbeParametersGenerator` for passwords,
+which must be slow. The two families stay apart: neither crate depends on the
+other.
 
 `tc_kdf` holds the contracts and the general functions. `Kdf`, after
 `IDerivationFunction`, fills a caller-provided buffer; `KdfInit<P>` takes the
@@ -45,11 +47,20 @@ call, while HKDF and SP 800-108 continue. Where Bouncy Castle leaves a limit
 unchecked or lets a counter wrap, the functions stop at the limit of their
 standard.
 
-`tc_kdf` has a `tests/documentation.rs` that requires the declarations it
-lists to say "constant time" or "variable time", exactly one, matched without
-case and across wrapped lines. Trait declarations, which end in `;`, are
-exempt. Keep the timing contract of each item stated in its doc comment, and
-extend the list when adding declarations.
+`tc_pbe` holds password-based derivation for PBE: `PbeGenerator` derives a
+key, a key and IV, or a MAC key into caller-provided buffers, and
+`PbeGeneratorInit<P>` takes the password, salt and iteration count. The
+schemes are `Pkcs5S1` (PBKDF1), `Pkcs5S2` (PBKDF2 over HMAC), `Pkcs12` (RFC
+7292 appendix B) and `OpenSslPbe` (`EVP_BytesToKey`), with Bouncy Castle's
+password encoders as free functions. Every call derives from the start, as in
+Bouncy Castle. An iteration count of 0 is refused, except by `OpenSslPbe`,
+which ignores the count.
+
+`tc_kdf` and `tc_pbe` each have a `tests/documentation.rs` that requires the
+declarations it lists to say "constant time" or "variable time", exactly one,
+matched without case and across wrapped lines. Trait declarations, which end
+in `;`, are exempt. Keep the timing contract of each item stated in its doc
+comment, and extend the list when adding declarations.
 
 `unsafe` code is forbidden at every crate root.
 
