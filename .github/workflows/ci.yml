@@ -103,7 +103,7 @@ jobs:
       - run: cargo clippy --locked --all-targets --all-features -- -D warnings
       - run: cargo doc --locked --no-deps
       - run: cargo doc --locked --no-deps --all-features
-      - run: cargo package --locked -p tc_kdf -p tc_pbe
+      - run: cargo package --locked -p tc_kdf -p tc_pbe -p tc_pwhash
         env:
           # Keep unpacked package manifests outside rust-cache's build tree.
           CARGO_TARGET_DIR: ${{ runner.temp }}/package
@@ -133,10 +133,17 @@ jobs:
               exit 1
             fi
           }
-          # No dependency is platform-specific, so every target shares one set.
+          # Only tc_pwhash's set depends on the target; the others share one set.
           for target in aarch64-unknown-none wasm32-unknown-unknown x86_64-unknown-linux-gnu i686-unknown-linux-gnu; do
             check 'tc_block_cipher tc_digest tc_kdf tc_macs tc_zeroize' -p tc_kdf --target "$target"
             check 'tc_block_cipher tc_digest tc_kdf tc_macs tc_zeroize' -p tc_kdf --target "$target" --all-features
             check 'tc_block_cipher tc_digest tc_macs tc_pbe tc_zeroize' -p tc_pbe --target "$target"
             check 'tc_block_cipher tc_digest tc_macs tc_pbe tc_zeroize' -p tc_pbe --target "$target" --all-features
+            # tc_sha detects CPU features through tc_runtime on x86 alone.
+            pwhash='tc_blake tc_block_cipher tc_constant_time tc_digest tc_macs tc_pbe tc_pwhash tc_sha tc_zeroize'
+            case "$target" in
+              x86_64-*|i686-*) pwhash="$pwhash tc_runtime" ;;
+            esac
+            check "$pwhash" -p tc_pwhash --target "$target"
+            check "$pwhash" -p tc_pwhash --target "$target" --all-features
           done
