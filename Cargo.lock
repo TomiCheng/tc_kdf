@@ -14,6 +14,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "tc_blake"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "caf69f2c2b54c941d4dd2271866e34bca80ded754f5e988a0710b4d44cb33d05"
+dependencies = [
+ "tc_digest",
+ "tc_runtime",
+ "tc_zeroize",
+]
+
+[[package]]
 name = "tc_block_cipher"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -31,6 +42,12 @@ dependencies = [
  "tc_block_cipher",
  "tc_zeroize",
 ]
+
+[[package]]
+name = "tc_constant_time"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0bcfe3e4732defe64408b706121575a0fdbd7011a3647566cd0a353daf64c165"
 
 [[package]]
 name = "tc_digest"
@@ -81,6 +98,18 @@ dependencies = [
  "tc_digest",
  "tc_macs",
  "tc_md",
+ "tc_sha",
+ "tc_zeroize",
+]
+
+[[package]]
+name = "tc_pwhash"
+version = "0.1.0"
+dependencies = [
+ "tc_blake",
+ "tc_constant_time",
+ "tc_digest",
+ "tc_pbe",
  "tc_sha",
  "tc_zeroize",
 ]

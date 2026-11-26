@@ -1,0 +1,21 @@
+[package]
+name = "tc_pwhash"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Password hashing after Bouncy Castle: Argon2, bcrypt with OpenBSD's hash strings, and scrypt."
+readme = "README.md"
+documentation = "https://docs.rs/tc_pwhash"
+keywords = ["argon2", "bcrypt", "scrypt", "password-hashing", "no-std"]
+categories = ["cryptography", "authentication", "no-std"]
+include = ["src/**", "tests/**", "README.md", "CHANGELOG.md", "LICENSE-MIT", "LICENSE-APACHE"]
+
+[dependencies]
+tc_blake = "0.1.0"
+tc_constant_time = "0.1.0"
+tc_digest = "0.1.0"
+tc_pbe = { version = "0.1.0", path = "../tc_pbe" }
+tc_sha = "0.1.1"
+tc_zeroize = { version = "0.1.0", features = ["alloc"] }
