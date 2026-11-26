@@ -25,8 +25,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 The crate list and workspace-wide checks live in the root
 [README.md](README.md); read it rather than restating it here. Every crate is
-`no_std`. `tc_kdf` and `tc_pbe` always use `alloc`, for the copies of the
-secret they keep.
+`no_std`. `tc_kdf`, `tc_pbe` and `tc_pwhash` always use `alloc`, for the
+copies of the secret they keep and, in `tc_pwhash`, the working memory.
 
 This repository holds key derivation after Bouncy Castle: `IDerivationFunction`
 for secrets with enough entropy, and `PbeParametersGenerator` for passwords,
@@ -56,11 +56,21 @@ password encoders as free functions. Every call derives from the start, as in
 Bouncy Castle. An iteration count of 0 is refused, except by `OpenSslPbe`,
 which ignores the count.
 
-`tc_kdf` and `tc_pbe` each have a `tests/documentation.rs` that requires the
-declarations it lists to say "constant time" or "variable time", exactly one,
-matched without case and across wrapped lines. Trait declarations, which end
-in `;`, are exempt. Keep the timing contract of each item stated in its doc
-comment, and extend the list when adding declarations.
+`tc_pwhash` holds password hashing: Argon2, bcrypt with OpenBSD's hash
+strings, and scrypt, one public module each, with no shared trait, as Bouncy
+Castle has none. scrypt runs on `tc_pbe`'s PBKDF2, the one sibling dependency
+in the workspace. Argon2d, Argon2id past its first half pass, scrypt and
+bcrypt read memory or S-boxes at indices that depend on the password; that is
+how they are memory-hard or how Blowfish works, so it is disclosed as variable
+time (cache timing) rather than avoided.
+
+`tc_kdf`, `tc_pbe` and `tc_pwhash` each have a `tests/documentation.rs` that
+requires the declarations it lists to say "constant time" or "variable time",
+exactly one, matched without case and across wrapped lines; `tc_pwhash`
+checks every function, private helpers included, since they sit on the
+password's path. Trait declarations, which end in `;`, are exempt. Keep the
+timing contract of each item stated in its doc comment, and extend the list
+when adding declarations.
 
 `unsafe` code is forbidden at every crate root.
 

@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["tc_kdf", "tc_pbe"]
+members = ["tc_kdf", "tc_pbe", "tc_pwhash"]
 
 [workspace.package]
 edition = "2024"
