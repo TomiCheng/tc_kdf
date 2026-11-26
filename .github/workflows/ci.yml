@@ -103,7 +103,7 @@ jobs:
       - run: cargo clippy --locked --all-targets --all-features -- -D warnings
       - run: cargo doc --locked --no-deps
       - run: cargo doc --locked --no-deps --all-features
-      - run: cargo package --locked -p tc_kdf
+      - run: cargo package --locked -p tc_kdf -p tc_pbe
         env:
           # Keep unpacked package manifests outside rust-cache's build tree.
           CARGO_TARGET_DIR: ${{ runner.temp }}/package
@@ -137,4 +137,6 @@ jobs:
           for target in aarch64-unknown-none wasm32-unknown-unknown x86_64-unknown-linux-gnu i686-unknown-linux-gnu; do
             check 'tc_block_cipher tc_digest tc_kdf tc_macs tc_zeroize' -p tc_kdf --target "$target"
             check 'tc_block_cipher tc_digest tc_kdf tc_macs tc_zeroize' -p tc_kdf --target "$target" --all-features
+            check 'tc_block_cipher tc_digest tc_macs tc_pbe tc_zeroize' -p tc_pbe --target "$target"
+            check 'tc_block_cipher tc_digest tc_macs tc_pbe tc_zeroize' -p tc_pbe --target "$target" --all-features
           done
